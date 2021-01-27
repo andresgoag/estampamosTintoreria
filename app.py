@@ -53,8 +53,7 @@ def find_xbee_coordinator(serial_port_list):
             if pan_id_check(local_pan_id, PAN_ID) and firmware_check(local_firmware, ALLOWED_FIRMWARE_LOCAL):
                 return device
 
-        except error:
-            print(error)
+        except:
             continue
 
     return None
@@ -72,7 +71,7 @@ serial_port_list = [i.device for i in list_ports.comports()]
 device = find_xbee_coordinator(serial_port_list)
 
 if device:
-    print(device.get_pan_id().hex())
+    print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
 else:
     print("No se encontro ningun xbee coordinador")
 
