@@ -81,11 +81,8 @@ if device:
 
     xbee_maquina1 = RemoteZigBeeDevice(device, XBee64BitAddress.from_hex_string("0013A20040A841C4"))
 
-    print(xbee_maquina1.get_pan_id().hex())
+    print(xbee_maquina1.get_node_id().hex())
 
-
-
-    print(xnet)
 
 
 else:
