@@ -1,6 +1,9 @@
+import time
+
 from serial.tools import list_ports
 
 from digi.xbee.devices import ZigBeeDevice
+from digi.xbee.models.status import NetworkDiscoveryStatus
 
 
 
