@@ -1,7 +1,7 @@
 from serial.tools import list_ports
 
-from digi.xbee.devices import ZigBeeDevice, RemoteZigBeeDevice
-from digi.xbee.models.address import XBee64BitAddress
+from digi.xbee.devices import ZigBeeDevice
+
 
 
 # Global constants
@@ -12,7 +12,7 @@ ALLOWED_FIRMWARE_LOCAL = [
 ]
 
 NODOS = {
-    'maquina1':'Maquina1'
+    'maquina1':'MAQUINA1'
 }
 
 
@@ -79,9 +79,12 @@ device = find_xbee_coordinator(serial_port_list)
 if device:
     print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
 
-    xbee_maquina1 = RemoteZigBeeDevice(device, XBee64BitAddress.from_hex_string("0013A20040A841C4"))
+    xbee_network = device.get_network()
 
-    xbee_maquina1.read_device_info()
+    xbee_maquina1 = xbee_network.get_device_by_node_id(NODOS['maquina1'])
+
+
+    #xbee_maquina1.read_device_info()
 
 
     print(xbee_maquina1.get_node_id())
