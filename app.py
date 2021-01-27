@@ -53,7 +53,8 @@ def find_xbee_coordinator(serial_port_list):
             if pan_id_check(local_pan_id, PAN_ID) and firmware_check(local_firmware, ALLOWED_FIRMWARE_LOCAL):
                 return device
 
-        except:
+        except XBeeException as error:
+            print(error)
             continue
 
     return None
