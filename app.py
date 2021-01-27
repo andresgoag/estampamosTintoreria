@@ -84,9 +84,7 @@ if device:
     xbee_maquina1.read_device_info()
 
 
-    print(xbee_maquina1.get_node_id()
-
-
+    print(xbee_maquina1.get_node_id())
 
 else:
     print("No se encontro ningun xbee coordinador")
