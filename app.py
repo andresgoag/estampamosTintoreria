@@ -18,6 +18,8 @@ NODOS = {
     'maquina1':'MAQUINA1'
 }
 
+MODBUS_WRITE = b'\x01\x06\x10\x00\x00\xFF\xCD\x4A'
+
 
 
 
@@ -67,16 +69,18 @@ def find_xbee_coordinator(serial_port_list):
 
     return None
 
+
 # Callback for discovered devices.
 def callback_device_discovered(remote):
-    print("Device discovered: %s" % remote)
+    print(f"Xbee descubierto: {remote}")
 
 # Callback for discovery finished.
 def callback_discovery_finished(status):
     if status == NetworkDiscoveryStatus.SUCCESS:
-        print("Discovery process finished successfully.")
+        print("Proceso de descubrimiento finalizado.")
     else:
-        print("There was an error discovering devices: %s" % status.description)
+        print(f"Error al descubrir la red: {status.description}")
+
 
 def find_xbee_network(device):
 
@@ -91,7 +95,7 @@ def find_xbee_network(device):
     #Start discovery
     xbee_network.start_discovery_process()
 
-    print("Discovering remote XBee devices...")
+    print("Descubriendo nodos...")
 
     while xbee_network.is_discovery_running():
         time.sleep(0.2)
@@ -114,15 +118,11 @@ if device:
     print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
 
     xbee_network = find_xbee_network(device)
+    xbee_maquina1 = xbee_network.get_device_by_node_id(NODOS['maquina1'])
+
+    device.send_data(xbee_maquina1, MODBUS_WRITE)
 
 
-    xbee_maquina1 = xbee_network.get_device_by_node_id("MAQUINA1")
-
-
-    #xbee_maquina1.read_device_info()
-
-
-    print(xbee_maquina1.get_node_id())
 
 else:
     print("No se encontro ningun xbee coordinador")
