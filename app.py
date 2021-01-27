@@ -5,9 +5,14 @@ from digi.xbee.devices import ZigBeeDevice
 
 # Global constants
 PAN_ID = b'\x00\x00\x00\x00\x00\x00\x30\x06'
+
 ALLOWED_FIRMWARE_LOCAL = [
     b'\x21\xA7'
 ]
+
+NODOS = {
+    'maquina1':'Maquina1'
+}
 
 
 
@@ -72,7 +77,19 @@ device = find_xbee_coordinator(serial_port_list)
 
 if device:
     print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
+
+    xbee_network = device.get_network()
+
+    remote_list = xbee_network.discover_devices(NODOS.values())
+
+    xbee_maquina1 = get_device_by_node_id(NODOS['maquina1'])
+
+    print(xbee_maquina1.get_pan_id().hex())
+
+
+
+    print(xnet)
+
+
 else:
     print("No se encontro ningun xbee coordinador")
-
-
