@@ -79,7 +79,7 @@ device = find_xbee_coordinator(serial_port_list)
 if device:
     print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
 
-    xbee_maquina1 = RemoteZigbeeDevice(device, XBee64BitAddress.from_hex_string("0013A20040A841C4"))
+    xbee_maquina1 = RemoteZigBeeDevice(device, XBee64BitAddress.from_hex_string("0013A20040A841C4"))
 
     print(xbee_maquina1.get_pan_id().hex())
 
