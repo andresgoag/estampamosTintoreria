@@ -80,9 +80,8 @@ if device:
 
     xbee_network = device.get_network()
 
-    remote_list = xbee_network.discover_devices(NODOS.values())
 
-    xbee_maquina1 = get_device_by_node_id(NODOS['maquina1'])
+    xbee_maquina1 = xbee_network.discover_device(NODOS['maquina1'])
 
     print(xbee_maquina1.get_pan_id().hex())
 
