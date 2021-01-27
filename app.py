@@ -64,6 +64,37 @@ def find_xbee_coordinator(serial_port_list):
 
     return None
 
+# Callback for discovered devices.
+def callback_device_discovered(remote):
+    print("Device discovered: %s" % remote)
+
+# Callback for discovery finished.
+def callback_discovery_finished(status):
+    if status == NetworkDiscoveryStatus.SUCCESS:
+        print("Discovery process finished successfully.")
+    else:
+        print("There was an error discovering devices: %s" % status.description)
+
+def find_xbee_network(device):
+
+    xbee_network = device.get_network()
+    xbee_network.set_discovery_timeout(5)
+    xbee_network.clear()
+
+    # Add callbacks
+    xbee_network.add_device_discovered_callback(callback_device_discovered)
+    xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
+
+    #Start discovery
+    xbee_network.start_discovery_process()
+
+    print("Discovering remote XBee devices...")
+
+    while xbee_network.is_discovery_running():
+        time.sleep(0.2)
+
+    return xbee_network
+
 
 
 
@@ -79,7 +110,8 @@ device = find_xbee_coordinator(serial_port_list)
 if device:
     print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
 
-    xbee_network = device.get_network()
+    xbee_network = find_xbee_network(device)
+
 
     xbee_maquina1 = xbee_network.get_device_by_node_id("MAQUINA1")
 
