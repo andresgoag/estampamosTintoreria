@@ -81,7 +81,7 @@ if device:
 
     xbee_network = device.get_network()
 
-    xbee_maquina1 = xbee_network.get_device_by_node_id(NODOS['maquina1'])
+    xbee_maquina1 = xbee_network.get_device_by_node_id("MAQUINA1")
 
 
     #xbee_maquina1.read_device_info()
