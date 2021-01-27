@@ -9,8 +9,7 @@ ALLOWED_FIRMWARE_LOCAL = [
     b'\x21\xA7'
 ]
 
-# Flags
-coordinator_found = False
+
 
 
 # Funciones
@@ -35,30 +34,38 @@ def firmware_check(firmware, list_firmwares):
     return False
 
 
+def find_xbee_coordinator(serial_port_list):
+
+    global PAN_ID, ALLOWED_FIRMWARE_LOCAL
+
+    for port in serial_port_list:
+
+        device = ZigBeeDevice(port, 9600)
+
+        try:
+            device.open()
+            local_pan_id = device.get_pan_id()
+            local_firmware = device.get_firmware_version()
+            if pan_id_check(local_pan_id, PAN_ID) and firmware_check(local_firmware, ALLOWED_FIRMWARE_LOCAL):
+                return device
+
+        except:
+            continue
+
+    return None
+
+
+
+
+
 
 
 
 
 serial_port_list = [i.device for i in list_ports.comports()]
 
-for port in serial_port_list:
+device = find_xbee_coordinator(serial_port_list)
 
-    device = ZigBeeDevice(port, 9600)
-
-    try:
-        device.open()
-        local_pan_id = device.get_pan_id()
-        local_firmware = device.get_firmware_version()
-        if pan_id_check(local_pan_id, PAN_ID) and firmware_check(local_firmware, ALLOWED_FIRMWARE_LOCAL):
-            print(f'Coordinador encontrado en el puerto {port}')
-            coordinator_found = True
-            break
-
-    except:
-        continue
-
-
-if not coordinator_found:
-    print('No se encontro ningun xbee coordinador')
+print(device.get_pan_id().hex())
 
 
