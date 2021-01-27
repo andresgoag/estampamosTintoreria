@@ -36,6 +36,10 @@ def firmware_check(firmware, list_firmwares):
 
 def find_xbee_coordinator(serial_port_list):
 
+    """
+    Finds a xbee coordinator, aand open its communication interface
+    """
+
     global PAN_ID, ALLOWED_FIRMWARE_LOCAL
 
     for port in serial_port_list:
@@ -66,6 +70,9 @@ serial_port_list = [i.device for i in list_ports.comports()]
 
 device = find_xbee_coordinator(serial_port_list)
 
-print(device.get_pan_id().hex())
+if device:
+    print(device.get_pan_id().hex())
+else:
+    print("No se encontro ningun xbee coordinador")
 
 
