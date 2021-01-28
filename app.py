@@ -10,11 +10,12 @@ from digi.xbee.models.status import NetworkDiscoveryStatus
 
 class modbus_response:
 
-    def __init__(self, address, command, bytes_number, data):
+    def __init__(self, address, command, bytes_number, data, data_int):
         self.address = address
         self.command = command
         self.bytes_number = bytes_number
         self.data = data
+        self.data_int = data_int
 
 # Funciones
 
@@ -176,8 +177,9 @@ def read_modbus_response(response):
         bytes_number = response[2]
         data = response[3:3+bytes_number]
         bytes_number = bytes_number.to_bytes(1, byteorder='big')
+        data_int = int.from_bytes(data, 'big')
 
-        return modbus_response(address, command, bytes_number, data)
+        return modbus_response(address, command, bytes_number, data, data_int)
 
     else:
         return None
@@ -243,7 +245,7 @@ if device:
 
         res = read_modbus_response(xbee_message.data)
 
-        print(res.data.hex())
+        print(res.data_int)
 
 
         time.sleep(3)
