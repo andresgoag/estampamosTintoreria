@@ -235,6 +235,8 @@ if device:
             print("malo")
 
 
+        temp_actual = 0
+
         while temp_actual <= lower_temp:
 
             device.send_data(xbee_maquina1, create_modbus(
