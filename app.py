@@ -196,7 +196,7 @@ if device:
         gradient = float(input('Gradiente')) # C/min
 
         modbus_sent = set_temperature(lower_temp, xbee_maquina1)
-        xbee_message = device.read_data()
+        xbee_message = device.read_data(1)
 
         print(modbus_sent.hex())
         print(xbee_message.data.hex())
