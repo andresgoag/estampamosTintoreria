@@ -6,6 +6,15 @@ from serial.tools import list_ports
 from digi.xbee.devices import ZigBeeDevice
 from digi.xbee.models.status import NetworkDiscoveryStatus
 
+# Class
+
+class modbus_response:
+
+    def __init__(self, address, command, bytes_number, data):
+        self.address = address
+        self.command = command
+        self.bytes_number = bytes_number
+        self.data = data
 
 # Funciones
 
@@ -158,6 +167,21 @@ def set_temperature(temp, device, xbee):
 
     return False
 
+def read_modbus_response(response):
+    
+    if crc_modbus(response[:-2]) == response[-2:]:
+
+        address = response[0]
+        command = response[1]
+        bytes_number = response[2]
+        upper_limit = int.from_bytes(bytes_number, 'big')
+        data = response[3:upper_limit]
+
+        return modbus_response(address, command, bytes_number, data)
+
+    else:
+        return None
+
 
 
 
@@ -217,7 +241,9 @@ if device:
 
         xbee_message = device.read_data(0.1)
 
-        print(xbee_message.data.hex())
+        res = read_modbus_response(xbee_message.data)
+
+        print(res.data.hex())
 
 
         time.sleep(3)
