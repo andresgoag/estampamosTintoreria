@@ -235,6 +235,7 @@ if device:
             print("malo")
 
 
+        print("Inicia proceso para alcanzar temperatura inferior")
         temp_actual = 0
 
         while temp_actual <= lower_temp:
@@ -249,12 +250,14 @@ if device:
             xbee_message = device.read_data(0.2)
             modbus_res = read_modbus_response(xbee_message.data)
             temp_actual = modbus_res.data_int * 180 / 2000
+            print(temp_actual)
 
             time.sleep(1)
 
 
 
 
+        print('temperatura alcanzada, inicia rampa')
         temp = lower_temp
 
         while temp <= upper_temp:
@@ -262,6 +265,8 @@ if device:
             temp += gradient/frecuency
 
             value_recorded = set_temperature(temp, device, xbee_maquina1)
+
+            print(temp)
 
             time.sleep(60/frecuency)
 
