@@ -222,9 +222,10 @@ if device:
 
     while True:
 
-        lower_temp = float(input('Limite inferior')) # C
-        upper_temp = float(input('Limite superior')) # C
-        gradient = float(input('Gradiente')) # C/min
+        lower_temp = float(input('Limite inferior: ')) # C
+        upper_temp = float(input('Limite superior: ')) # C
+        gradient = float(input('Gradiente: ')) # C/min
+        frecuency = float(input('Frecuencia de muestreo por minuto: '))
 
         value_recorded = set_temperature(lower_temp, device, xbee_maquina1)
 
@@ -234,21 +235,37 @@ if device:
             print("malo")
 
 
-        device.send_data(xbee_maquina1, create_modbus(
-            address = b'\x01',
-            command = b'\x03',
-            reg_address = b'\x14\x57',
-            data_16 = b'\x00\x01'
-        ))
+        while temp_actual <= lower_temp:
 
-        xbee_message = device.read_data(0.2)
+            device.send_data(xbee_maquina1, create_modbus(
+                address = b'\x01',
+                command = b'\x03',
+                reg_address = b'\x14\x57',
+                data_16 = b'\x00\x01'
+            ))
 
-        res = read_modbus_response(xbee_message.data)
+            xbee_message = device.read_data(0.2)
+            modbus_res = read_modbus_response(xbee_message.data)
+            temp_actual = modbus_res.data_int * 180 / 2000
 
-        print(res.data_int)
+            time.sleep(1)
 
 
-        time.sleep(3)
+
+
+        temp = lower_temp
+
+        while temp <= upper_temp:
+
+            temp += gradient/frecuency
+
+            value_recorded = set_temperature(temp, device, xbee_maquina1)
+
+            time.sleep(60/frecuency)
+
+
+
+        print('Finalizo el proceso')
 
 
         
