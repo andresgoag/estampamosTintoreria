@@ -171,10 +171,16 @@ def read_modbus_response(response):
     
     if crc_modbus(response[:-2]) == response[-2:]:
 
+        print(response.hex())
+
         address = response[0].to_bytes(1, byteorder='big')
+        print(address.hex())
         command = response[1].to_bytes(1, byteorder='big')
+        print(command.hex())
         bytes_number = response[2].to_bytes(1, byteorder='big')
+        print(bytes_number.hex())
         data = response[3:response[2]]
+        print(data.hex())
 
         return modbus_response(address, command, bytes_number, data)
 
