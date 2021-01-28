@@ -179,6 +179,9 @@ if device:
 
     device.send_data(xbee_maquina1, MODBUS_WRITE)
 
+    print("Waiting for data...\n")
+    input()
+
 
 else:
     print("No se encontro ningun xbee coordinador")
