@@ -247,12 +247,12 @@ if device:
                 data_16 = b'\x00\x01'
             ))
 
-            xbee_message = device.read_data(0.2)
+            xbee_message = device.read_data(0.05)
             modbus_res = read_modbus_response(xbee_message.data)
             temp_actual = modbus_res.data_int * 180 / 2000
             print(temp_actual)
 
-            time.sleep(1)
+            time.sleep(2)
 
 
 
