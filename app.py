@@ -137,7 +137,7 @@ def convert_temp_plc_units(temp):
     plc_units = int(round(plc_units, 0))
     return plc_units
 
-def set_temperature(temp, xbee):
+def set_temperature(temp, device, xbee):
 
     plc_units = convert_temp_plc_units(temp)
     plc_units_bytes = plc_units.to_bytes(2, byteorder='big')
@@ -151,7 +151,12 @@ def set_temperature(temp, xbee):
 
     device.send_data(xbee, modbus_sent)
 
-    return modbus_sent
+    xbee_message = device.read_data(0.1)
+
+    if modbus_sent == xbee_message.data:
+        return True
+
+    return False
 
 
 
@@ -195,8 +200,15 @@ if device:
         upper_temp = float(input('Limite superior')) # C
         gradient = float(input('Gradiente')) # C/min
 
-        modbus_sent = set_temperature(lower_temp, xbee_maquina1)
-        xbee_message = device.read_data(0.1)
+        value_recorded = set_temperature(lower_temp, device, xbee_maquina1)
+
+        if value_recorded:
+            print('Success')
+        else:
+            print("malo")
+        
+
+
 
         print(modbus_sent.hex())
         print(xbee_message.data.hex())
