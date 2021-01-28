@@ -241,7 +241,7 @@ if device:
             data_16 = b'\x00\x01'
         ))
 
-        xbee_message = device.read_data(0.1)
+        xbee_message = device.read_data(0.2)
 
         res = read_modbus_response(xbee_message.data)
 
