@@ -7,23 +7,6 @@ from digi.xbee.devices import ZigBeeDevice
 from digi.xbee.models.status import NetworkDiscoveryStatus
 
 
-
-# Global constants
-PAN_ID = b'\x00\x00\x00\x00\x00\x00\x30\x06'
-
-ALLOWED_FIRMWARE_LOCAL = [
-    b'\x21\xA7'
-]
-
-NODOS = {
-    'maquina1':'MAQUINA1'
-}
-
-MODBUS_WRITE = b'\x01\x06\x10\x00\x00\xFF\xCD\x4A'
-
-
-
-
 # Funciones
 
 def pan_id_check(bytes1, bytes2):
@@ -49,7 +32,6 @@ def firmware_check(firmware, list_firmwares):
 
     return False
 
-
 def find_xbee_coordinator(serial_port_list):
 
     """
@@ -58,7 +40,6 @@ def find_xbee_coordinator(serial_port_list):
     Arguments: 
         serial_port_list: list of available serial ports
     """
-
     global PAN_ID, ALLOWED_FIRMWARE_LOCAL
 
     for port in serial_port_list:
@@ -77,21 +58,22 @@ def find_xbee_coordinator(serial_port_list):
 
     return None
 
-
-# Callback for discovered devices.
 def callback_device_discovered(remote):
+    """
+    Callback for discovered devices.
+    """
     print(f"Xbee descubierto: {remote}")
 
-# Callback for discovery finished.
 def callback_discovery_finished(status):
+    """
+    Callback for discovery finished.
+    """
     if status == NetworkDiscoveryStatus.SUCCESS:
         print("Proceso de descubrimiento finalizado.")
     else:
         print(f"Error al descubrir la red: {status.description}")
 
-
 def find_xbee_network(device, callback_device_discovered, callback_discovery_finished):
-
     """
     Creates a thread searching for xbees on network
 
@@ -100,7 +82,6 @@ def find_xbee_network(device, callback_device_discovered, callback_discovery_fin
         callback_device_discovered(remote_xbee_object): function to execute when a xbee is found
         callback_discovery_finished(network_discovery_status): function to execute when discovery process is finished
     """
-
     xbee_network = device.get_network()
     xbee_network.set_discovery_timeout(5)
     xbee_network.clear()
@@ -119,22 +100,14 @@ def find_xbee_network(device, callback_device_discovered, callback_discovery_fin
 
     return xbee_network
 
-
-
-
 def crc_modbus(modbus_frame):
     """
     Arguments:
         modbus_frame: bytes object
     """
-
-    crc = libscrc.modbus(modbus_frame)
-    print(crc.hex())
-    crc16 = crc.to_bytes(2, byteorder='little')
-    print(crc16.hex())
-
-
-
+    crc = libscrc.modbus(modbus_frame) #retorna un entero
+    crc16 = crc.to_bytes(2, byteorder='little') # convertir el entero a bytes (less - most)
+    return crc16 # objeto bytes
 
 def create_modbus(address, command, reg_address, data_16):
     """
@@ -144,13 +117,39 @@ def create_modbus(address, command, reg_address, data_16):
     data_16 = b'\x00\xFF' (most - less)
     crc = b'\xCD\x4A'(less - most)
     """
-    
     modbus_frame = address + command + reg_address + data_16
+    modbus_frame += crc_modbus(modbus_frame)
+    return modbus_frame
+
+
+
+def data_received_callback(xbee_message):
+    """
+    Function to execute when data is received
+
+    Arguments:
+        xbee_message: Xbee message object
+    """
+    address = xbee_message.remote_device.get_64bit_addr()
+    data = xbee_message.data.hex()
+    print(f"Received data from {address}: {data}")
 
 
 
 
 
+
+
+# Global constants
+PAN_ID = b'\x00\x00\x00\x00\x00\x00\x30\x06'
+
+ALLOWED_FIRMWARE_LOCAL = [
+    b'\x21\xA7'
+]
+
+NODOS = {
+    'maquina1':'MAQUINA1'
+}
 
 
 
@@ -160,6 +159,7 @@ def create_modbus(address, command, reg_address, data_16):
 serial_port_list = [i.device for i in list_ports.comports()]
 
 device = find_xbee_coordinator(serial_port_list)
+device.add_data_received_callback(data_received_callback)
 
 if device:
     print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
@@ -167,13 +167,17 @@ if device:
     xbee_network = find_xbee_network(device, callback_device_discovered, callback_discovery_finished)
     xbee_maquina1 = xbee_network.get_device_by_node_id(NODOS['maquina1'])
 
+
+
+
+    MODBUS_WRITE = create_modbus(
+        address = b'\x01',
+        command = b'\x06',
+        reg_address = b'\x10\x00',
+        data_16 = b'\x00\xFF'
+    )
+
     device.send_data(xbee_maquina1, MODBUS_WRITE)
-
-
-    address = b'\x01\x06\x10\x00\x00\xFF\xCD\x4A'
-
-    crc_modbus(address)
-
 
 
 else:
