@@ -121,8 +121,6 @@ def create_modbus(address, command, reg_address, data_16):
     modbus_frame += crc_modbus(modbus_frame)
     return modbus_frame
 
-
-
 def data_received_callback(xbee_message):
     """
     Function to execute when data is received
@@ -134,6 +132,26 @@ def data_received_callback(xbee_message):
     data = xbee_message.data.hex()
     print(f"Received data from {address}: {data}")
 
+def convert_temp_plc_units(temp):
+    plc_units = temp * 2000 / 180
+    plc_units = int(round(plc_units, 0))
+    return plc_units
+
+def set_temperature(temp, xbee):
+
+    plc_units = convert_temp_plc_units(temp)
+    plc_units_bytes = plc_units.to_bytes(2, byteorder='big')
+
+    modbus_sent = create_modbus(
+        address = b'\x01',
+        command = b'\x06',
+        reg_address = b'\x10\x00',
+        data_16 = plc_units_bytes
+    )
+
+    device.send_data(xbee, modbus_sent)
+
+    return modbus_sent
 
 
 
@@ -159,7 +177,7 @@ NODOS = {
 serial_port_list = [i.device for i in list_ports.comports()]
 
 device = find_xbee_coordinator(serial_port_list)
-device.add_data_received_callback(data_received_callback)
+#device.add_data_received_callback(data_received_callback)
 
 if device:
     print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
@@ -167,20 +185,34 @@ if device:
     xbee_network = find_xbee_network(device, callback_device_discovered, callback_discovery_finished)
     xbee_maquina1 = xbee_network.get_device_by_node_id(NODOS['maquina1'])
 
+    
 
 
 
-    MODBUS_WRITE = create_modbus(
-        address = b'\x01',
-        command = b'\x06',
-        reg_address = b'\x10\x00',
-        data_16 = b'\x00\xFF'
-    )
+    while True:
 
-    device.send_data(xbee_maquina1, MODBUS_WRITE)
+        lower_temp = float(input('Limite inferior')) # C
+        upper_temp = float(input('Limite superior')) # C
+        gradient = float(input('Gradiente')) # C/min
 
-    print("Waiting for data...\n")
-    input()
+        modbus_sent = set_temperature(lower_temp, xbee_maquina1)
+        xbee_message = device.read_data()
+
+        print(modbus_sent.hex())
+        print(xbee_message.data.hex())
+
+        time.sleep(3)
+
+
+        
+
+
+        # device.send_data(xbee_maquina1, create_modbus(
+        #     address = b'\x01',
+        #     command = b'\x03',
+        #     reg_address = b'\x14\x57',
+        #     data_16 = b'\x00\x01'
+        # ))
 
 
 else:
