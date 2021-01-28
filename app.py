@@ -174,8 +174,7 @@ def read_modbus_response(response):
         address = response[0]
         command = response[1]
         bytes_number = response[2]
-        upper_limit = int.from_bytes(bytes_number, 'big')
-        data = response[3:upper_limit]
+        data = response[3:bytes_number]
 
         return modbus_response(address, command, bytes_number, data)
 
