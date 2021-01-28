@@ -206,12 +206,19 @@ if device:
             print('Success')
         else:
             print("malo")
-        
 
 
+        device.send_data(xbee_maquina1, create_modbus(
+            address = b'\x01',
+            command = b'\x03',
+            reg_address = b'\x14\x57',
+            data_16 = b'\x00\x01'
+        ))
 
-        print(modbus_sent.hex())
+        xbee_message = device.read_data(0.1)
+
         print(xbee_message.data.hex())
+
 
         time.sleep(3)
 
@@ -219,12 +226,7 @@ if device:
         
 
 
-        # device.send_data(xbee_maquina1, create_modbus(
-        #     address = b'\x01',
-        #     command = b'\x03',
-        #     reg_address = b'\x14\x57',
-        #     data_16 = b'\x00\x01'
-        # ))
+        
 
 
 else:
