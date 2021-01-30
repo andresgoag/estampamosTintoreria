@@ -258,21 +258,30 @@ if device:
 
 
 
+        
+        while True:
+            
+            device.send_data(xbee_maquina1, create_modbus(
+                address = b'\x01',
+                command = b'\x03',
+                reg_address = b'\x14\x57',
+                data_16 = b'\x00\x01'
+            ))
+
+            xbee_message = device.read_data(0.1)
+            modbus_res = read_modbus_response(xbee_message.data)
+            temp_actual = modbus_res.data_int
+            print(temp_actual)
+
+            time.sleep(2)
 
 
-        hex_apagar = b'\x00\x00'
-        modbus_apagar = create_modbus(
-            address = b'\x01',
-            command = b'\x05',
-            reg_address = b'\x08\x00',
-            data_16 = hex_apagar
-        )
 
 
-        comando = input('Escriba un comando: ')
 
-        if comando == 'apagar':
-            device.send_data(xbee_maquina1, modbus_apagar)
+
+
+
 
 
 
