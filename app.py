@@ -200,55 +200,73 @@ if device:
     while True:
 
         lower_temp = int(input('Limite inferior: '))
-        upper_temp = int(input('Limite superior: '))
-        gradient = int(input('Gradiente: '))
-
         hex_lower_temp = lower_temp.to_bytes(2, byteorder='big')
-        hex_upper_temp = upper_temp.to_bytes(2, byteorder='big')
-        hex_gradient = gradient.to_bytes(2, byteorder='big')
-        hex_iniciar = b'\xFF\x00'
-        hex_apagar = b'\x00\x00'
-
         modbus_lower_temp = create_modbus(
             address = b'\x01',
             command = b'\x06',
             reg_address = b'\x10\x01',
             data_16 = hex_lower_temp
         )
+        device.send_data(xbee_maquina1, modbus_lower_temp)
+        xbee_message_lower = device.read_data(0.1)
+        if xbee_message_lower.data == modbus_lower_temp:
+            print("success lower")
 
+
+
+        upper_temp = int(input('Limite superior: '))
+        hex_upper_temp = upper_temp.to_bytes(2, byteorder='big')
         modbus_upper_temp = create_modbus(
             address = b'\x01',
             command = b'\x06',
             reg_address = b'\x10\x00',
             data_16 = hex_upper_temp
         )
+        device.send_data(xbee_maquina1, modbus_upper_temp)
+        xbee_message_upper = device.read_data(0.1)
+        if xbee_message_upper.data == modbus_upper_temp:
+            print("success upper")
 
+        
+
+        gradient = int(input('Gradiente: '))
+        hex_gradient = gradient.to_bytes(2, byteorder='big')
         modbus_gradient = create_modbus(
             address = b'\x01',
             command = b'\x06',
             reg_address = b'\x10\x02',
             data_16 = hex_gradient
         )
-
+        device.send_data(xbee_maquina1, modbus_gradient)
+        xbee_message_gradient = device.read_data(0.1)
+        if xbee_message_gradient == modbus_gradient:
+            print("success gradient")
+        
+        
+        
+        hex_iniciar = b'\xFF\x00'
         modbus_iniciar = create_modbus(
             address = b'\x01',
             command = b'\x06',
             reg_address = b'\x08\x00',
             data_16 = hex_iniciar
         )
+        device.send_data(xbee_maquina1, modbus_iniciar)
+        xbee_message_iniciar = device.read_data(0.1)
+        if xbee_message_iniciar == modbus_iniciar:
+            print("success iniciar")
 
+
+
+
+
+        hex_apagar = b'\x00\x00'
         modbus_apagar = create_modbus(
             address = b'\x01',
             command = b'\x06',
             reg_address = b'\x08\x00',
             data_16 = hex_apagar
         )
-
-        device.send_data(xbee_maquina1, modbus_lower_temp)
-        device.send_data(xbee_maquina1, modbus_upper_temp)
-        device.send_data(xbee_maquina1, modbus_gradient)
-        device.send_data(xbee_maquina1, modbus_iniciar)
-
 
 
         comando = input('Escriba un comando: ')
