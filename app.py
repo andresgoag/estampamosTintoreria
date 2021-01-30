@@ -199,9 +199,9 @@ if device:
 
     while True:
 
-        lower_temp = float(input('Limite inferior: '))
-        upper_temp = float(input('Limite superior: '))
-        gradient = float(input('Gradiente: '))
+        lower_temp = int(input('Limite inferior: '))
+        upper_temp = int(input('Limite superior: '))
+        gradient = int(input('Gradiente: '))
 
         hex_lower_temp = lower_temp.to_bytes(2, byteorder='big')
         hex_upper_temp = upper_temp.to_bytes(2, byteorder='big')
