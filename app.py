@@ -247,7 +247,7 @@ if device:
         hex_iniciar = b'\xFF\x00'
         modbus_iniciar = create_modbus(
             address = b'\x01',
-            command = b'\x06',
+            command = b'\x05',
             reg_address = b'\x08\x00',
             data_16 = hex_iniciar
         )
@@ -263,7 +263,7 @@ if device:
         hex_apagar = b'\x00\x00'
         modbus_apagar = create_modbus(
             address = b'\x01',
-            command = b'\x06',
+            command = b'\x05',
             reg_address = b'\x08\x00',
             data_16 = hex_apagar
         )
