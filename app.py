@@ -297,7 +297,7 @@ def iniciar(lower, upper, gradient):
     if lower_flag:
         upper_flag = set_upper_limit(upper, device, xbee_maquina1)
         if upper_flag:
-            gradient_flag = set_gradient_limit(gradient, device, xbee_maquina1)
+            gradient_flag = set_gradient(gradient, device, xbee_maquina1)
             if gradient_flag:
                 iniciar_proceso(device, xbee_maquina1)
                 return {"message":"Proceso iniciado", "flag":True}
