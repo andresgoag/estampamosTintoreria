@@ -65,14 +65,13 @@ const iniciar_proceso = () => {
         eel.iniciar(lower, upper, gradient)((ret) => {
             console.log("3");
             message = ret['message']
-            console.log("4");
+            document.getElementById("mensaje").textContent = message;
         })
 
     } else {
         message = "Todos los campos son requeridos"
+        document.getElementById("mensaje").textContent = message;
     }
-
-    document.getElementById("mensaje").textContent = message;
 }
 
 const terminar_proceso = () => {
