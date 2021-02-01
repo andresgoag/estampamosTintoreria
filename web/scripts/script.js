@@ -50,19 +50,22 @@ setInterval(readTemp, 4000)
 
 
 const iniciar_proceso = () => {
+    console.log("1");
     let lower = document.getElementById("input-limite-inferior").value;
     let upper = document.getElementById("input-limite-superior").value;
     let gradient = document.getElementById("input-gradiente").value;
-
+    console.log("2");
     let message;
 
     if (lower != "" && upper != "" && gradient != "") {
         lower = parseFloat(lower)
         upper = parseFloat(upper)
         gradient = parseFloat(gradient)
-
+        console.log("2");
         eel.iniciar(lower, upper, gradient)((ret) => {
+            console.log("3");
             message = ret['message']
+            console.log("4");
         })
 
     } else {
