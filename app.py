@@ -21,7 +21,7 @@ NODOS = {
     'maquina1':'MAQUINA1'
 }
 
-READ_RESPONSE_TIME_OUT = 0.5 
+READ_RESPONSE_TIME_OUT = 0.2
 
 
 # Classes
