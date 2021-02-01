@@ -10,6 +10,19 @@ from digi.xbee.models.status import NetworkDiscoveryStatus
 
 eel.init('web')
 
+# Global constants
+PAN_ID = b'\x00\x00\x00\x00\x00\x00\x30\x06'
+
+ALLOWED_FIRMWARE_LOCAL = [
+    b'\x21\xA7'
+]
+
+NODOS = {
+    'maquina1':'MAQUINA1'
+}
+
+READ_RESPONSE_TIME_OUT = 0.5 
+
 
 # Classes
 
@@ -190,7 +203,7 @@ def set_lower_limit(temp, device, remote):
     )
 
     device.send_data(remote, modbus_lower_temp)
-    xbee_message_lower = device.read_data(0.1)
+    xbee_message_lower = device.read_data(READ_RESPONSE_TIME_OUT)
 
     if xbee_message_lower.data == modbus_lower_temp:
         return True
@@ -210,7 +223,7 @@ def set_upper_limit(temp, device, remote):
     )
 
     device.send_data(remote, modbus_upper_temp)
-    xbee_message_upper = device.read_data(0.1)
+    xbee_message_upper = device.read_data(READ_RESPONSE_TIME_OUT)
 
     if xbee_message_upper.data == modbus_upper_temp:
         return True
@@ -230,7 +243,7 @@ def set_gradient_limit(temp, device, remote):
     )
 
     device.send_data(remote, modbus_gradient)
-    xbee_message_gradient = device.read_data(0.1)
+    xbee_message_gradient = device.read_data(READ_RESPONSE_TIME_OUT)
 
     if xbee_message_gradient == modbus_gradient:
         return True
@@ -266,7 +279,7 @@ def leer_temperatura_actual(device, remote):
                 data_16 = b'\x00\x01'
             ))
 
-    xbee_message = device.read_data(0.1)
+    xbee_message = device.read_data(READ_RESPONSE_TIME_OUT)
     modbus_res = read_modbus_response(xbee_message.data)
     temp = convert_plc_units_temp(modbus_res.data_int)
     return temp
@@ -278,21 +291,6 @@ def getData():
     value = leer_temperatura_actual(device, xbee_maquina1);
     return {"temperatura_actual":value}
 
-
-
-
-
-
-# Global constants
-PAN_ID = b'\x00\x00\x00\x00\x00\x00\x30\x06'
-
-ALLOWED_FIRMWARE_LOCAL = [
-    b'\x21\xA7'
-]
-
-NODOS = {
-    'maquina1':'MAQUINA1'
-}
 
 
 

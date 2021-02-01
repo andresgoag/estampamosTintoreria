@@ -1,3 +1,25 @@
+
+
+let trace1 = {
+    y: [0],
+    type: 'line',
+    line: {
+        color: '#ffc669',
+      }
+};
+
+let data = [trace1];
+
+let layout = {
+    showlegend: false,
+    margin: {l:30, r:30, b:30, t:30},
+    font:{color: '#f5f5f5'},
+    paper_bgcolor: '#2b294b',
+    plot_bgcolor: '#2b294b',
+};
+  
+Plotly.newPlot('monitoring__chart', data, layout, {displayModeBar: false});
+
 let count = 0;
 
 const readTemp = () => {
@@ -21,36 +43,4 @@ const readTemp = () => {
     })
 }
 
-setInterval(readTemp, 1000)
-
-
-
-
-// const getData = () => {
-//     return Math.random();
-// }
-
-// let trace1 = {
-//     y: [getData()],
-//     type: 'line',
-//     line: {
-//         color: '#ffc669',
-//       }
-// };
-
-// var data = [trace1];
-
-// var layout = {
-//     showlegend: false,
-//     margin: {l:30, r:30, b:30, t:30},
-//     font:{color: '#f5f5f5'},
-//     paper_bgcolor: '#2b294b',
-//     plot_bgcolor: '#2b294b',
-// };
-  
-//   Plotly.newPlot('monitoring__chart', data, layout, {displayModeBar: false});
-
-
-
-
-
+setInterval(readTemp, 4000)
