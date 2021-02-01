@@ -98,6 +98,7 @@ html {
 .simple-widget__valor {
     width: 40%;
     font-size: 3rem;
+    overflow: hidden;
 }
 
 .simple-widget__valor p::after {

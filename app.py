@@ -230,7 +230,7 @@ def set_upper_limit(temp, device, remote):
     
     return False
 
-def set_gradient_limit(temp, device, remote):
+def set_gradient(temp, device, remote):
 
     plc_units = convert_temp_plc_units(temp)
     hex_gradient = plc_units.to_bytes(2, byteorder='big')
@@ -291,7 +291,27 @@ def getData():
     value = leer_temperatura_actual(device, xbee_maquina1);
     return {"temperatura_actual":value}
 
+@eel.expose
+def iniciar(lower, upper, gradient):
+    lower_flag = set_lower_limit(lower, device, xbee_maquina1)
+    if lower_flag:
+        upper_flag = set_upper_limit(upper, device, xbee_maquina1)
+        if upper_flag:
+            gradient_flag = set_gradient_limit(gradient, device, xbee_maquina1)
+            if gradient_flag:
+                iniciar_proceso(device, xbee_maquina1)
+                return {"message":"Proceso iniciado", "flag":True}
+            else:
+                return {"message":"Error escribiendo gradient", "flag":False}
+        else:
+            return {"message":"Error escribiendo upper_limit", "flag":False}
+    else:
+        return {"message":"Error escribiendo lower_limit", "flag":False}
 
+@eel.expose
+def terminar():
+    detener_proceso(device, xbee_maquina1)
+    return {"message":"Proceso finalizado"}
 
 
 

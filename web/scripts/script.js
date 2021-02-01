@@ -1,5 +1,3 @@
-
-
 let trace1 = {
     y: [0],
     type: 'line',
@@ -8,7 +6,9 @@ let trace1 = {
       }
 };
 
+
 let data = [trace1];
+
 
 let layout = {
     showlegend: false,
@@ -17,8 +17,10 @@ let layout = {
     paper_bgcolor: '#2b294b',
     plot_bgcolor: '#2b294b',
 };
-  
+
+
 Plotly.newPlot('monitoring__chart', data, layout, {displayModeBar: false});
+
 
 let count = 0;
 
@@ -44,3 +46,41 @@ const readTemp = () => {
 }
 
 setInterval(readTemp, 4000)
+
+
+
+const iniciar_proceso = () => {
+    let lower = document.getElementById("input-limite-inferior").value;
+    let upper = document.getElementById("input-limite-superior").value;
+    let gradient = document.getElementById("input-gradiente").value;
+
+    let message;
+
+    if (lower != "" && upper != "" && gradient != "") {
+        lower = parseFloat(lower)
+        upper = parseFloat(upper)
+        gradient = parseFloat(gradient)
+
+        eel.iniciar(lower, upper, gradient)((ret) => {
+            message = ret['message']
+        })
+
+    } else {
+        message = "Todos los campos son requeridos"
+    }
+
+    document.getElementById("mensaje").textContent = message;
+}
+
+const terminar_proceso = () => {
+    eel.terminar()((ret) => {
+        let message = ret['message']
+        document.getElementById("mensaje").textContent = message;
+    })
+}
+
+boton_iniciar_proceso = document.getElementById("start")
+boton_iniciar_proceso.addEventListener('click', iniciar_proceso)
+
+boton_terminar_proceso = document.getElementById("end")
+boton_terminar_proceso.addEventListener('click', terminar_proceso)
