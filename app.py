@@ -1,12 +1,17 @@
 import time
 import libscrc
+import eel
 
 from serial.tools import list_ports
 
 from digi.xbee.devices import ZigBeeDevice
 from digi.xbee.models.status import NetworkDiscoveryStatus
 
-# Class
+
+eel.init('web')
+
+
+# Classes
 
 class modbus_response:
 
@@ -168,6 +173,114 @@ def convert_temp_plc_units(temp):
     plc_units = int(round(plc_units, 0))
     return plc_units
 
+def convert_plc_units_temp(plc_units):
+    temp = plc_units * 180 / 2000
+    return temp
+
+def set_lower_limit(temp, device, remote):
+
+    plc_units = convert_temp_plc_units(temp)
+    hex_lower_temp = plc_units.to_bytes(2, byteorder='big')
+
+    modbus_lower_temp = create_modbus(
+        address = b'\x01',
+        command = b'\x06',
+        reg_address = b'\x10\x01',
+        data_16 = hex_lower_temp
+    )
+
+    device.send_data(remote, modbus_lower_temp)
+    xbee_message_lower = device.read_data(0.1)
+
+    if xbee_message_lower.data == modbus_lower_temp:
+        return True
+    
+    return False
+
+def set_upper_limit(temp, device, remote):
+
+    plc_units = convert_temp_plc_units(temp)
+    hex_upper_temp = plc_units.to_bytes(2, byteorder='big')
+
+    modbus_upper_temp = create_modbus(
+        address = b'\x01',
+        command = b'\x06',
+        reg_address = b'\x10\x00',
+        data_16 = hex_upper_temp
+    )
+
+    device.send_data(remote, modbus_upper_temp)
+    xbee_message_upper = device.read_data(0.1)
+
+    if xbee_message_upper.data == modbus_upper_temp:
+        return True
+    
+    return False
+
+def set_gradient_limit(temp, device, remote):
+
+    plc_units = convert_temp_plc_units(temp)
+    hex_gradient = plc_units.to_bytes(2, byteorder='big')
+
+    modbus_gradient = create_modbus(
+        address = b'\x01',
+        command = b'\x06',
+        reg_address = b'\x10\x02',
+        data_16 = hex_gradient
+    )
+
+    device.send_data(remote, modbus_gradient)
+    xbee_message_gradient = device.read_data(0.1)
+
+    if xbee_message_gradient == modbus_gradient:
+        return True
+    
+    return False
+
+def iniciar_proceso(device, remote):
+    hex_iniciar = b'\xFF\x00'
+    modbus_iniciar = create_modbus(
+        address = b'\x01',
+        command = b'\x05',
+        reg_address = b'\x08\x00',
+        data_16 = hex_iniciar
+    )
+    device.send_data(remote, modbus_iniciar)
+
+def detener_proceso(device, remote):
+    hex_detener = b'\x00\x00'
+    modbus_detener = create_modbus(
+        address = b'\x01',
+        command = b'\x05',
+        reg_address = b'\x08\x00',
+        data_16 = hex_detener
+    )
+    device.send_data(remote, modbus_detener)
+
+def leer_temperatura_actual(device, remote):
+
+    device.send_data(remote, create_modbus(
+                address = b'\x01',
+                command = b'\x03',
+                reg_address = b'\x14\x57',
+                data_16 = b'\x00\x01'
+            ))
+
+    xbee_message = device.read_data(0.1)
+    modbus_res = read_modbus_response(xbee_message.data)
+    temp = convert_plc_units_temp(modbus_res.data_int)
+    return temp
+
+@eel.expose
+def getData():
+    global device, xbee_maquina1
+
+    value = leer_temperatura_actual(device, xbee_maquina1);
+    return {"temperatura_actual":value}
+
+
+
+
 
 
 # Global constants
@@ -184,8 +297,6 @@ NODOS = {
 
 
 
-
-
 serial_port_list = [i.device for i in list_ports.comports()]
 
 device = find_xbee_coordinator(serial_port_list)
@@ -195,152 +306,10 @@ if device:
     print(f'Se encontro un xbee coordinador con pan id: {device.get_pan_id().hex()}')
 
     xbee_network = find_xbee_network(device, callback_device_discovered, callback_discovery_finished)
+
     xbee_maquina1 = xbee_network.get_device_by_node_id(NODOS['maquina1'])
 
-    while True:
-
-        lower_temp = int(input('Limite inferior: '))
-        hex_lower_temp = lower_temp.to_bytes(2, byteorder='big')
-        modbus_lower_temp = create_modbus(
-            address = b'\x01',
-            command = b'\x06',
-            reg_address = b'\x10\x01',
-            data_16 = hex_lower_temp
-        )
-        device.send_data(xbee_maquina1, modbus_lower_temp)
-        xbee_message_lower = device.read_data(0.1)
-        if xbee_message_lower.data == modbus_lower_temp:
-            print("success lower")
-
-
-
-        upper_temp = int(input('Limite superior: '))
-        hex_upper_temp = upper_temp.to_bytes(2, byteorder='big')
-        modbus_upper_temp = create_modbus(
-            address = b'\x01',
-            command = b'\x06',
-            reg_address = b'\x10\x00',
-            data_16 = hex_upper_temp
-        )
-        device.send_data(xbee_maquina1, modbus_upper_temp)
-        xbee_message_upper = device.read_data(0.1)
-        if xbee_message_upper.data == modbus_upper_temp:
-            print("success upper")
-
-        
-
-        gradient = int(input('Gradiente: '))
-        hex_gradient = gradient.to_bytes(2, byteorder='big')
-        modbus_gradient = create_modbus(
-            address = b'\x01',
-            command = b'\x06',
-            reg_address = b'\x10\x02',
-            data_16 = hex_gradient
-        )
-        device.send_data(xbee_maquina1, modbus_gradient)
-        xbee_message_gradient = device.read_data(0.1)
-        if xbee_message_gradient == modbus_gradient:
-            print("success gradient")
-        
-        
-        
-        hex_iniciar = b'\xFF\x00'
-        modbus_iniciar = create_modbus(
-            address = b'\x01',
-            command = b'\x05',
-            reg_address = b'\x08\x00',
-            data_16 = hex_iniciar
-        )
-        device.send_data(xbee_maquina1, modbus_iniciar)
-        xbee_message_iniciar = device.read_data(0.1)
-        if xbee_message_iniciar == modbus_iniciar:
-            print("success iniciar")
-
-
-
-        
-        while True:
-            
-            device.send_data(xbee_maquina1, create_modbus(
-                address = b'\x01',
-                command = b'\x03',
-                reg_address = b'\x14\x57',
-                data_16 = b'\x00\x01'
-            ))
-
-            xbee_message = device.read_data(0.1)
-            modbus_res = read_modbus_response(xbee_message.data)
-            temp_actual = modbus_res.data_int
-            print(temp_actual)
-
-            time.sleep(2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # while True: Para grandiente de temperatura
-
-    #     lower_temp = float(input('Limite inferior: ')) # C
-    #     upper_temp = float(input('Limite superior: ')) # C
-    #     gradient = float(input('Gradiente: ')) # C/min
-    #     frecuency = float(input('Frecuencia de muestreo por minuto: '))
-
-    #     value_recorded = set_temperature(lower_temp, device, xbee_maquina1)
-
-    #     if value_recorded:
-    #         print('Success')
-    #     else:
-    #         print("malo")
-
-    #     print("Inicia proceso para alcanzar temperatura inferior")
-    #     temp_actual = 0
-
-    #     while temp_actual <= lower_temp:
-            
-    #         device.send_data(xbee_maquina1, create_modbus(
-    #             address = b'\x01',
-    #             command = b'\x03',
-    #             reg_address = b'\x14\x57',
-    #             data_16 = b'\x00\x01'
-    #         ))
-
-    #         xbee_message = device.read_data(0.05)
-    #         modbus_res = read_modbus_response(xbee_message.data)
-    #         temp_actual = modbus_res.data_int * 180 / 2000
-    #         print(temp_actual)
-
-    #         time.sleep(2)
-
-
-
-
-    #     print('temperatura alcanzada, inicia rampa')
-    #     temp = lower_temp
-
-    #     while temp <= upper_temp:
-
-    #         temp += gradient/frecuency
-
-    #         value_recorded = set_temperature(temp, device, xbee_maquina1)
-
-    #         print(temp)
-
-    #         time.sleep(60/frecuency)
-
-
-
-    #     print('Finalizo el proceso')
-
+    eel.start('index.html', size=(800, 480))
 
 
 else:

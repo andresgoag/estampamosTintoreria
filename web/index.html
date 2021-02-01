@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tintura</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Mukta&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+
+        <div class="sidebar__title">
+            <h1>Dashboard</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5z"/>
+            </svg>
+        </div>
+
+        <nav>
+            <ul class="sidebar__nav">
+                <li class="sidebar__nav-item">
+                    <a href="#">Procesos de tintura</a>
+                </li>
+
+                <li class="sidebar__nav-item">
+                    <a href="#">Configuración</a>
+                </li>
+            </ul>
+        </nav>
+
+    </aside>
+
+    <main class="main">
+
+
+        <div class="main__monitoring">
+            <div class="main__simple-widget">
+                <div class="simple-widget__title">
+                    <h5>Temperatura actual</h5>    
+                </div>
+    
+                <div class="simple-widget__valor">
+                    <p id="temperatura_actual">60</p>
+                </div>
+            </div>
+
+            <div class="monitoring__chart" id="monitoring__chart">
+
+            </div>
+        </div>
+
+
+
+        <div class="main__form">
+            <div class="main__simple-input">
+                <div class="simple-input__title">
+                    <label for="input-limite-inferior">Límite Inferior</label>    
+                </div>
+    
+                <div class="simple-input__input">
+                    <input type="text" name="input-limite-inferior" id="input-limite-inferior" maxlength="3">
+                </div>
+            </div>
+    
+            <div class="main__simple-input">
+                <div class="simple-input__title">
+                    <label for="input-limite-superior">Límite Superior</label>
+                </div>
+    
+                <div class="simple-input__input">
+                    <input type="text" name="input-limite-superior" id="input-limite-superior" maxlength="3">
+                </div>
+            </div>
+    
+            <div class="main__simple-input">
+                <div class="simple-input__title">
+                    <label for="input-gradiente">Gradiente</label>
+                </div>
+    
+                <div class="simple-input__input">
+                    <input type="text" name="input-gradiente" id="input-gradiente" maxlength="3">
+                </div>
+            </div>
+        </div>
+
+
+        <div class="main__process-control">
+            <button class="process-control__button" id="start">Iniciar proceso</button>
+            <button class="process-control__button" id="end">Detener proceso</button>
+        </div>
+
+
+    </main>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript" src="/eel.js"></script>
+    <script src="./scripts/script.js"></script>
+
+</body>
+</html>
+
+
+
+
+<!-- 
+    1. Temperatura actual
+    2. Set lower temp
+    3. Set upper temp
+    4. Set gradient
+    5. Iniciar proceso
+    6. Detener proceso
+ -->
